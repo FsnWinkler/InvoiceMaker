@@ -6,13 +6,13 @@ from fpdf.enums import XPos, YPos
 
 
 class PDF(FPDF):
-    def __init__(self, number_rows, self_info_id, product_data_id, company_id, bill_number, product_amount):
+    def __init__(self, number_rows, self_info_id, product_data_id, company_id, bill_number, product_amount,filename):
         super().__init__()
         self.rows = number_rows
         self.company_id = company_id
         self.bill_number = bill_number
         self.self_info_id = self_info_id
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
         cursor.execute("SELECT company_name FROM self_info WHERE oid={}".format(self.self_info_id))
         data = cursor.fetchone()
@@ -21,7 +21,7 @@ class PDF(FPDF):
         self.product_amount = product_amount
         self.add_page()
         self.my_company()
-        self.output("test.pdf")
+        self.output("{}.pdf".format(filename))
 
     def header(self):
         self.set_font("helvetica", "B", 20)
@@ -32,7 +32,7 @@ class PDF(FPDF):
         self.ln(20)
 
     def footer(self):
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM self_info WHERE oid={}".format(self.self_info_id))
         list = []
@@ -84,7 +84,7 @@ class PDF(FPDF):
 
 
     def my_company(self):
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM customer_data WHERE oid={}".format(self.company_id))
         data = cursor.fetchone()
@@ -126,7 +126,7 @@ class PDF(FPDF):
         self.set_xy(10, 116)
         self.set_font("helvetica", size=10)
         self.cell(200, 5, txt="_" * 95)
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
         summe = 0
         ust_summe = 0

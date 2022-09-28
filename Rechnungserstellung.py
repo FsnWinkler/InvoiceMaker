@@ -8,12 +8,12 @@ import CreatePDF
 
 
 class MainWindow(customtkinter.CTk):
+
     def __init__(self):
         super().__init__()
-        self.geometry("600x100")
+        self.geometry("1200x900")
         self.title("Easy Rechnungserstellung")
         self.create_mainwindow()
-
 
 
     def create_mainwindow(self):
@@ -30,11 +30,13 @@ class MainWindow(customtkinter.CTk):
         self.product_ids = []
         self.productAmount = []
         self.productAmount2 = []
+
         def createPdf():
+
             customer_keys = [k for k, v in self.customer_dict.items() if v == str(customerVar.get())]
-            print("Kunden IDs= " + str(customer_keys[0]))
+            #print("Kunden IDs= " + str(customer_keys[0]))
             self_info_keys = [k for k, v in self.self_dict.items() if v == str(selfInfoVar.get())]
-            print("Eigene Daten IDs= " + str(self_info_keys[0]))
+            #print("Eigene Daten IDs= " + str(self_info_keys[0]))
 
             product_keys = [k for k, v in self.product_dict.items() if v == str(productVar.get())]
             self.product_ids.append(product_keys)
@@ -47,77 +49,84 @@ class MainWindow(customtkinter.CTk):
             for i in range(len(self.productAmount)):
                 self.productAmount2.append(self.productAmount[i].get())
 
-            for i in range(len(self.product_ids)):
-                print("Product IDs= " + str(self.product_ids[i][0]) + " Menge= " + (str(self.productAmount2[i])))
-
-            print("Product counter= " + str(self.addedProductCounter + 1))
+            # for i in range(len(self.product_ids)):
+            #     print("Product IDs= " + str(self.product_ids[i][0]) + " Menge= " + (str(self.productAmount2[i])))
+            #
+            # print("Product counter= " + str(self.addedProductCounter + 1))
             rows = self.addedProductCounter + 1
             productID = []
             for i in range(len(self.product_ids)):
                 productID.append(self.product_ids[i][0])
-            print(productID)
-            print(self.productAmount2)
-            print(rows)
+            # print(productID)
+            # print(self.productAmount2)
+            # print(rows)
             productQ = []
             for i in range(len(self.productAmount2)):
                 productQ.append(int(self.productAmount2[i]))
 
+            filename = "output"
 
-            CreatePDF.PDF(rows, self_info_keys[0], productID, customer_keys[0], "1", productQ)
+            CreatePDF.PDF(rows, self_info_keys[0], productID, customer_keys[0], "1", productQ, filename)
+            # except:
+            #     showinfo("Info", "Bitte  wählen Sie alle erforderlichen Daten aus")
+            showinfo("Info", "PDF erfolgreich erstellt")
 
 
 
 
-        def show_customer():
-            try:
-                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
-                cursor = connection.cursor()
-                cursor.execute("SELECT * FROM customer_data WHERE oid=?", (self.selected_customer_id, ))
-                data = cursor.fetchone()
-                print(data)
-                show_data = str(data[1] + " " + data[2] + " " + data[3])
-                self.customer_label1.set_text(show_data)
-                print(data[1] + " " + data[2] + " " + data[3])
-            except:
-                showinfo("Info", "Bitte wähle einen Kunden aus")
 
-        def show_self_info():
+        # def show_customer():
+        #     db_url = "C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db"
+        #     try:
+        #         connection = sqlite3.connect(db_url)
+        #         cursor = connection.cursor()
+        #         cursor.execute("SELECT * FROM customer_data WHERE oid=?", (self.selected_customer_id, ))
+        #         data = cursor.fetchone()
+        #         print(data)
+        #         show_data = str(data[1] + " " + data[2] + " " + data[3])
+        #         self.customer_label1.set_text(show_data)
+        #         print(data[1] + " " + data[2] + " " + data[3])
+        #     except:
+        #         showinfo("Info", "Bitte wähle einen Kunden aus")
+        #
+        # def show_self_info():
+        #     db_url = "C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db"
+        #
+        #     connection = sqlite3.connect(db_url)
+        #     cursor = connection.cursor()
+        #     cursor.execute("SELECT * FROM self_info WHERE oid=?", (self.selected_id_self_info, ))
+        #     data = cursor.fetchone()
+        #     print(data)
+        #     show_data = str(data[1] + " " + data[2] + " " + data[3] + " " + data[4] + " " + str(data[8]) + " " + data[9])
+        #     self.self_info_label1.set_text(show_data)
+        #     print(data[1] + " " + data[2] + " " + data[3])
 
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
-            cursor = connection.cursor()
-            cursor.execute("SELECT * FROM self_info WHERE oid=?", (self.selected_id_self_info, ))
-            data = cursor.fetchone()
-            print(data)
-            show_data = str(data[1] + " " + data[2] + " " + data[3] + " " + data[4] + " " + str(data[8]) + " " + data[9])
-            self.self_info_label1.set_text(show_data)
-            print(data[1] + " " + data[2] + " " + data[3])
-
-        def show_product():
-
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
-            cursor = connection.cursor()
-            for i in range(len(self.selected_product_id)):
-                cursor.execute("SELECT * FROM product_data WHERE oid=?", (self.selected_product_id[i], ))
-                data = cursor.fetchone()
-                print(data)
-                show_data = str(data[1] + " " + data[2] + " " + data[3] + " " + str(data[4]) + " " + data[5] + " " + data[6])
-                if i+1 == 1:
-                    self.product_label1.set_text(show_data)
-                if i+1 == 2:
-                    self.product_label2.set_text(show_data)
-                if i+1 == 3:
-                    self.product_label3.set_text(show_data)
-                if i+1 == 4:
-                    self.product_label4.set_text(show_data)
-
-                print(data[1] + " " + data[2] + " " + data[3])
-
-        def reset():
-            self.__init__()
+        # def show_product():
+        #
+        #     connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
+        #     cursor = connection.cursor()
+        #     for i in range(len(self.selected_product_id)):
+        #         cursor.execute("SELECT * FROM product_data WHERE oid=?", (self.selected_product_id[i], ))
+        #         data = cursor.fetchone()
+        #         print(data)
+        #         show_data = str(data[1] + " " + data[2] + " " + data[3] + " " + str(data[4]) + " " + data[5] + " " + data[6])
+        #         if i+1 == 1:
+        #             self.product_label1.set_text(show_data)
+        #         if i+1 == 2:
+        #             self.product_label2.set_text(show_data)
+        #         if i+1 == 3:
+        #             self.product_label3.set_text(show_data)
+        #         if i+1 == 4:
+        #             self.product_label4.set_text(show_data)
+        #
+        #         print(data[1] + " " + data[2] + " " + data[3])
+        #
+        # def reset():
+        #     self.__init__()
 
         def get_customer_rowid():
             listRowid = []
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
             cursor = connection.cursor()
             cursor.execute("SELECT id FROM customer_data")
             data = cursor.fetchall()
@@ -127,7 +136,7 @@ class MainWindow(customtkinter.CTk):
             return listRowid
         def get_self_rowid():
             listRowid = []
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
             cursor = connection.cursor()
             cursor.execute("SELECT id FROM self_info")
             data = cursor.fetchall()
@@ -138,7 +147,7 @@ class MainWindow(customtkinter.CTk):
 
         def get_product_rowid():
             listRowid = []
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
             cursor = connection.cursor()
             cursor.execute("SELECT id FROM product_data")
             data = cursor.fetchall()
@@ -148,32 +157,30 @@ class MainWindow(customtkinter.CTk):
             return listRowid
 
         def get_products():
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
             cursor = connection.cursor()
             for i in get_product_rowid():
                 cursor.execute("SELECT * FROM product_data WHERE oid={}".format(i))
                 data = cursor.fetchall()
                 string = data[0][1] + " " + data[0][2] + " " + data[0][3] + " " + str(data[0][4]) + " " + data[0][5] + " " + data[0][6]
                 self.product_dict[i] = string
-                print(self.product_dict)
                 productOptions.append(string)
 
 
         def get_customers():
-            customerList = []
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
             cursor = connection.cursor()
             for i in get_customer_rowid():
                 cursor.execute("SELECT * FROM customer_data WHERE oid={}".format(i))
                 data = cursor.fetchall()
                 string = data[0][1] + " " + data[0][2] + " " + data[0][3] + " " + data[0][4] + " " + str(data[0][5]) + " " + data[0][6]
                 self.customer_dict[i] = string
-                print(self.customer_dict)
+                #print(self.customer_dict)
                 customerOptions.append(string)
 
 
         def get_self():
-            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
             cursor = connection.cursor()
             for i in get_self_rowid():
                 cursor.execute("SELECT * FROM self_info WHERE oid={}".format(i))
@@ -181,15 +188,11 @@ class MainWindow(customtkinter.CTk):
                 string = data[0][1] + " " + data[0][2] + " " + data[0][3] + " " + data[0][4] + " " + str(
                     data[0][5]) + " " + data[0][6]
                 self.self_dict[i] = string
-                print(self.self_dict)
+                #print(self.self_dict)
                 selfOptions.append(string)
 
         def make_product_optionmenu():
             if self.addedProductCounter <= 6:
-
-                # for i in range(self.addedProductCounter +1):
-                #     self.productDict[i] = "optionMenuProduct" + "_" + str(i)
-                #     print(self.productDict[i])
 
                 self.productVarx = StringVar(self)
 
@@ -200,60 +203,35 @@ class MainWindow(customtkinter.CTk):
                 self.productAmount[self.addedProductCounter].grid(row=3 + self.addedProductCounter, column=2)
                 self.productAmount[self.addedProductCounter].insert(0, "Menge")
                 self.addedProductCounter += 1
-                # self.quantityEntry = customtkinter.CTkEntry(self.frame)
-                # self.quantityEntry.insert(0, "Menge")
-                # self.quantityEntry.grid(row=2, column=2, padx=10)
 
-
-
-                #print(self.addedProductCounter)
 
         def show_all_choosen():
-            print("-"*40)
-            # print(self.optionMenuCustomer.get())
-            # print(self.optionMenuSelf.get())
-            # print(self.optionMenuProduct.get())
-            # for i in range(len(self.productDict)):
-            #     print(self.productDict[i].get())
+            try:
+                print("-"*40)
+                customer_keys = [k for k, v in self.customer_dict.items() if v == str(customerVar.get())]
+                print("Kunden IDs= " + str(customer_keys[0]))
+                self_info_keys = [k for k, v in self.self_dict.items() if v == str(selfInfoVar.get())]
+                print("Eigene Daten IDs= " + str(self_info_keys[0]))
 
-            # self_info_keys = [k for k, v in self.self_dict.items() if v == str(selfInfoVar.get())]
-            # print(self_info_keys)
-            customer_keys = [k for k, v in self.customer_dict.items() if v == str(customerVar.get())]
-            print("Kunden IDs= " + str(customer_keys[0]))
-            self_info_keys = [k for k, v in self.self_dict.items() if v == str(selfInfoVar.get())]
-            print("Eigene Daten IDs= " + str(self_info_keys[0]))
-
-            product_keys = [k for k, v in self.product_dict.items() if v == str(productVar.get())]
-            self.product_ids.append(product_keys)
-            # print(self.productDict[0].get())
-            for i in range(len(self.productDict)):
-                product_keys = [k for k, v in self.product_dict.items() if v == str(self.productDict[i].get())]
+                product_keys = [k for k, v in self.product_dict.items() if v == str(productVar.get())]
                 self.product_ids.append(product_keys)
-            self.productAmount2.append(self.quantityEntry.get())
 
-            for i in range(len(self.productAmount)):
-                self.productAmount2.append(self.productAmount[i].get())
+                for i in range(len(self.productDict)):
+                    product_keys = [k for k, v in self.product_dict.items() if v == str(self.productDict[i].get())]
+                    self.product_ids.append(product_keys)
+                self.productAmount2.append(self.quantityEntry.get())
 
-            for i in range(len(self.product_ids)):
-                print("Product IDs= " + str(self.product_ids[i][0]) + " Menge= " + (str(self.productAmount2[i])))
+                for i in range(len(self.productAmount)):
+                    self.productAmount2.append(self.productAmount[i].get())
 
-            print("Product counter= " + str(self.addedProductCounter+1))
-            # print(self.productAmount2)
-            # product_keys = [k for k, v in self.product_dict.items() if v == str(self.productVarx.get())]
-            # self.product_ids.append(product_keys)
+                for i in range(len(self.product_ids)):
+                    print("Product IDs= " + str(self.product_ids[i][0]) + " Menge= " + (str(self.productAmount2[i])))
 
-        # def get_current_customer_rowid():
-        #     print(customerOptions[0][0])
-        #     print(customerOptions[1])
-            # print(customerOptions[2])
-            # print(customerOptions[3])
-            # print(customerOptions[4])
+                print("Product counter= " + str(self.addedProductCounter+1))
+            except:
+                showinfo("info", "Bitte wählen Sie ihre Daten aus!")
 
-            #print(data)
-                # for i in data:
-                #     customerList.append(i)
-                #print(i)
-            #print(customerList)
+
 
 
         font  = "Verdana 12 bold"
@@ -263,9 +241,6 @@ class MainWindow(customtkinter.CTk):
         #dataframe/mainframe
         self.frame = customtkinter.CTkFrame(self, height=400, width=200, border_width=0)
         self.frame.grid(sticky='nsew',row=1, column=0, padx=20, pady=50 , ipadx=300)
-
-        # self.frame.columnconfigure(0, weight=1)
-        # self.columnconfigure(2, weight=1)
 
         #buttonframe
         self.button_frame = customtkinter.CTkFrame(self)
@@ -281,13 +256,7 @@ class MainWindow(customtkinter.CTk):
         customerVar = StringVar(self)
         self.optionMenuCustomer = customtkinter.CTkOptionMenu(self.frame,variable=customerVar, values=list(self.customer_dict.values()), width=800)
 
-        #ust_entry.set("20%")
-        # ust_entry.config(state="readonly")
         self.optionMenuCustomer.grid(row=0, column=1)
-
-        #
-        # self.customer_label1 = customtkinter.CTkLabel(self.frame, text="")
-        # self.customer_label1.grid(row=0, column=1, pady=10)
 
         #self info data
         self.self_info_label = customtkinter.CTkLabel(self.frame, text="Eigene Daten: ", borderwidth=0, text_font=font)
@@ -297,8 +266,6 @@ class MainWindow(customtkinter.CTk):
         selfInfoVar = StringVar(self)
 
         self.optionMenuSelf = customtkinter.CTkOptionMenu(self.frame,variable=selfInfoVar, values=list(self.self_dict.values()), width=800)
-        # ust_entry.set("20%")
-        # ust_entry.config(state="readonly")
         self.optionMenuSelf.grid(row=1, column=1)
 
         #product data
@@ -356,15 +323,6 @@ class MainWindow(customtkinter.CTk):
         self.button5.grid(row=0, column=4, padx=10, pady=10)
 
 
-
-    # def create_toplevel(self):
-    #     window = customtkinter.CTkToplevel(self)
-    #     window.geometry("400x200")
-    #
-    #     # create label on CTkToplevel window
-    #     label = customtkinter.CTkLabel(window, text="CTkToplevel window")
-    #     label.pack(side="top", fill="both", expand=True, padx=40, pady=40)
-
     def product_window(self):
         root = customtkinter.CTkToplevel(self)
         root.title("Produkte")
@@ -387,7 +345,7 @@ class MainWindow(customtkinter.CTk):
         root.geometry(center_window((1080, 800), root))
         root.resizable(False, False)
 
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM product_data")
         data = cursor.fetchall()
@@ -568,7 +526,7 @@ class MainWindow(customtkinter.CTk):
                 values = my_tree.item(selected, "values")
                 my_tree.delete(selected)
 
-                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                 cursor = connection.cursor()
                 cursor.execute("DELETE FROM product_data WHERE oid=?", (values[8],))
                 connection.commit()
@@ -578,7 +536,7 @@ class MainWindow(customtkinter.CTk):
         def add_product():
             if is_string():
                 if is_number():
-                    connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                    connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                     cursor = connection.cursor()
                     cursor.execute(
                         "CREATE TABLE IF NOT EXISTS product_data (id integer primary key autoincrement, name text, note text, unit text, price integer, ust integer, ust_apply numeric)")
@@ -614,7 +572,7 @@ class MainWindow(customtkinter.CTk):
                         my_tree.delete(selected)
 
                         connection = sqlite3.connect(
-                            "C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                            "C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                         cursor = connection.cursor()
                         cursor.execute(
                             "UPDATE product_data SET name=?, note=?, unit=?, price=?, ust=?, ust_apply=? WHERE oid=?",
@@ -699,7 +657,7 @@ class MainWindow(customtkinter.CTk):
         root.geometry(center_window((1080, 800), root))
         root.resizable(False, False)
 
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM customer_data")
         data = cursor.fetchall()
@@ -852,7 +810,7 @@ class MainWindow(customtkinter.CTk):
                 values = my_tree.item(selected, "values")
                 my_tree.delete(selected)
 
-                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                 cursor = connection.cursor()
                 cursor.execute("DELETE FROM customer_data WHERE oid=?", (values[7],))
                 connection.commit()
@@ -863,7 +821,7 @@ class MainWindow(customtkinter.CTk):
         def add_product():
             if is_string():
                 if is_number():
-                    connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                    connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                     cursor = connection.cursor()
                     cursor.execute(
                         "CREATE TABLE IF NOT EXISTS customer_data (id integer primary key autoincrement, name text, lastname text, company_name text, adress text, zip_code integer, ort text)")
@@ -901,7 +859,7 @@ class MainWindow(customtkinter.CTk):
                         my_tree.delete(selected)
 
                         connection = sqlite3.connect(
-                            "C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                            "C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                         cursor = connection.cursor()
                         cursor.execute(
                             "UPDATE customer_data SET  name=?, lastname=?, company_name=?, adress=?, zip_code=?, ort=? WHERE oid=?",
@@ -984,7 +942,7 @@ class MainWindow(customtkinter.CTk):
         root.geometry(center_window((1080, 800), root))
         root.resizable(False, False)
 
-        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+        connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
         cursor = connection.cursor()
 
         cursor.execute(
@@ -1204,7 +1162,7 @@ class MainWindow(customtkinter.CTk):
                 values = my_tree.item(selected, "values")
                 my_tree.delete(selected)
 
-                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                 cursor = connection.cursor()
                 cursor.execute("DELETE FROM customer_data WHERE oid=?", (values[7],))
                 connection.commit()
@@ -1214,7 +1172,7 @@ class MainWindow(customtkinter.CTk):
         def add_product():
             if is_string():
                 if is_number():
-                    connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                    connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                     cursor = connection.cursor()
                     cursor.execute(
                         "CREATE TABLE IF NOT EXISTS customer_data (id integer primary key autoincrement, name text, lastname text, company_name text, adress text, zip_code integer, ort text)")
@@ -1241,7 +1199,7 @@ class MainWindow(customtkinter.CTk):
                     showinfo("info", "Erfolgreich neue Persönliche Daten angelegt!")
                     clear_boxes()
                     root.destroy()
-                    self.self_info()
+                    #self.self_info()
                 else:
                     showinfo("info", "Bitte nur Nummern als Postleitzahl eingeben!")
             else:
@@ -1258,7 +1216,7 @@ class MainWindow(customtkinter.CTk):
                         my_tree.delete(selected)
 
                         connection = sqlite3.connect(
-                            "C:\\Users\\ffff\\PycharmProjects\\pythonProject1\\customer_data.db")
+                            "C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
                         cursor = connection.cursor()
                         cursor.execute(
                             "UPDATE self_info SET  firstname=?, lastname=?, company_name=?, address=?, phone_number=?, email=?,website=?, zip_code=?, ort=?, bank=?, bic=?, iban=? WHERE oid=?",
