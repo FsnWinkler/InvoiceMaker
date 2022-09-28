@@ -21,7 +21,7 @@ class PDF(FPDF):
         self.product_amount = product_amount
         self.add_page()
         self.my_company()
-        self.output("{}.pdf".format(filename))
+        self.output(filename)
 
     def header(self):
         self.set_font("helvetica", "B", 20)

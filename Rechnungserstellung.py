@@ -1,7 +1,7 @@
 import sqlite3
 import tkinter as tk
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from tkinter.messagebox import showinfo
 import customtkinter
 import CreatePDF
@@ -64,9 +64,48 @@ class MainWindow(customtkinter.CTk):
             for i in range(len(self.productAmount2)):
                 productQ.append(int(self.productAmount2[i]))
 
-            filename = "output"
+            #filename = "output"
 
-            CreatePDF.PDF(rows, self_info_keys[0], productID, customer_keys[0], "1", productQ, filename)
+            print("self keys: " + str(self_info_keys[0]))
+            print("product keys: " + str(productID))
+            print("customer keys: " + str(customer_keys[0]))
+            print("productQuantity keys: " + str(productQ))
+
+            file_path = filedialog.asksaveasfilename(defaultextension=".pdf")
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
+            cursor = connection.cursor()
+
+
+            connection = sqlite3.connect("C:\\Users\\ffff\\PycharmProjects\\InvoiceMaker\\customer_data.db")
+            cursor = connection.cursor()
+            cursor.execute("SELECT invoice_number FROM invoice_data ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
+            print(result[0])
+
+            invoice_number = str(result[0]+1)
+
+
+            CreatePDF.PDF(rows, self_info_keys[0], productID, customer_keys[0], invoice_number, productQ, file_path)
+
+
+
+
+            cursor.execute(
+                "CREATE TABLE IF NOT EXISTS invoice_data (id integer primary key autoincrement, self_info_id integer, product_id text, product_quantity text, customer_id integer, invoice_number integer)")
+            connection.commit()
+
+            cursor.execute("INSERT INTO invoice_data VALUES(NULL,?,?,?,?,?)",
+                           [
+                               self_info_keys[0],
+                               str(productID),
+                               str(productQ),
+                               customer_keys[0],
+                               int(invoice_number)
+                           ]
+                           )
+            connection.commit()
+            connection.close()
+
             # except:
             #     showinfo("Info", "Bitte  wählen Sie alle erforderlichen Daten aus")
             showinfo("Info", "PDF erfolgreich erstellt")
